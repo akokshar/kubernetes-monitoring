@@ -1,7 +1,6 @@
 commonLabels:
   app: kube-state-metrics
 resources:
-  - service.yaml
   - deployment.yaml
   - serviceaccount.yaml
   - clusterrole.yaml
