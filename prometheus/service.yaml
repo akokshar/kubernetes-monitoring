@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus
+spec:
+  selector: {}
+  type: NodePort
+  ports:
+    - name: promui
+      protocol: TCP
+      port: 9090
+      nodePort: 30090

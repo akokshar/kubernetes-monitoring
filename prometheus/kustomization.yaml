@@ -1,0 +1,11 @@
+commonLabels:
+  app: prometheus
+resources:
+  - configmap.yaml
+  - pv-data.yaml
+  - pvc-data.yaml
+  - deployment.yaml
+  - service.yaml
+  - serviceaccount.yaml
+  - clusterrole.yaml
+  - clusterrolebinding.yaml

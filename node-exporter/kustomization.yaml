@@ -1,0 +1,6 @@
+commonLabels:
+  app: node-exporter
+resources:
+  - serviceaccount.yaml
+  - rolebinding.yaml
+  - daemonset.yaml

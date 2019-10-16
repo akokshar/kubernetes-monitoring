@@ -1,0 +1,7 @@
+namespace: monitoring
+bases:
+  - prometheus
+  - node-exporter
+  - kube-state-metrics
+resources:
+  - namespace.yaml
