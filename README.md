@@ -2,6 +2,6 @@
 
 deploy prometheus, node-exporter, kube-state-metrics:
 
-review: kubectl kustomize .
+review: ```kubectl kustomize .```
 
-apply: kubectl apply -k .
+apply: ```kubectl apply -k .```
