@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-adapter
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {}
+  strategy:
+    type: Recreate
+  template:
+    spec:
+      containers:
+        - name: prometheus-adapter
+          image: quay.io/coreos/k8s-prometheus-adapter-amd64:v0.4.1
+          args:
+            - --cert-dir=/var/run/serving-cert
+            - --config=/etc/adapter/adapter-config.yaml
+            - --logtostderr=true
+            - --metrics-relist-interval=1m
+            - --prometheus-url=http://prometheus:9090/
+            - --secure-port=6443
+            - --v=0
+          ports:
+            - containerPort: 6443
+              name: metrics
+          resources:
+            limits:
+              cpu: 100m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmpfs
+              readOnly: false
+            - mountPath: /var/run/serving-cert
+              name: volume-serving-cert
+              readOnly: false
+            - mountPath: /etc/adapter
+              name: config
+              readOnly: true
+      serviceAccountName: prometheus-adapter
+      volumes:
+        - emptyDir: {}
+          name: tmpfs
+        - emptyDir: {}
+          name: volume-serving-cert
+        - configMap:
+            name: adapter-config
+          name: config

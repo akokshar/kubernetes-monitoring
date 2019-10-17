@@ -1,6 +1,8 @@
-# kubernetes-monitoring
+# kubernetes monitoring
 
-deploy prometheus, node-exporter, kube-state-metrics:
+**deploys**:
+
+prometheus, node-exporter, kube-state-metrics, prometheus-adapter
 
 review:
 ```bash

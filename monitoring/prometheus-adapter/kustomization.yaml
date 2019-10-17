@@ -1,0 +1,21 @@
+commonLabels:
+  app: prometheus-adapter
+
+resources:
+  - service.yaml
+  - deployment.yaml
+  - apiservice.yaml
+  - serviceaccount.yaml
+  - prometheus-adapter-clusterrole.yaml
+  - prometheus-adapter-binding.yaml
+  - clusterrolebinding-authdelegator.yaml
+  - aggregated-metrics-reader-clusterrole.yaml
+  - aggregated-metrics-reader-binding.yaml
+
+configMapGenerator:
+  - name: adapter-config
+    files:
+      - adapter-config.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
