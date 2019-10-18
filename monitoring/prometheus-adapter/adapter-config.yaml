@@ -1,7 +1,14 @@
 resourceRules:
   cpu:
-    containerQuery: sum(rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>,container!="POD",container!="",pod!=""}[5m])) by (<<.GroupBy>>)
-    nodeQuery: sum(1 - rate(node_cpu_seconds_total{mode="idle"}[5m]) * on(namespace, pod) group_left(node) node_namespace_pod:kube_pod_info:{<<.LabelMatchers>>}) by (<<.GroupBy>>)
+    containerQuery: |
+      sum by (<<.GroupBy>>) (
+        rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>,container!=""}[5m])
+      )
+    nodeQuery: |
+      sum by (<<.GroupBy>>) (
+        label_join((kube_pod_info{pod=~"node-exporter-.*",<<.LabelMatchers>>}), "kubernetes_pod_name", "", "pod") * on(kubernetes_pod_name) group_right(node)
+        (sum by(kubernetes_pod_name) (1 - rate(node_cpu_seconds_total{mode="idle",kubernetes_pod_name=~"node-exporter-.*"}[5m])))
+      )
     resources:
       overrides:
         node:
@@ -12,11 +19,18 @@ resourceRules:
           resource: pod
     containerLabel: container
   memory:
-    containerQuery: sum(container_memory_working_set_bytes{<<.LabelMatchers>>,container!="POD",container!="",pod!=""}) by (<<.GroupBy>>)
-    nodeQuery: sum(node_memory_MemTotal_bytes{job="node-exporter",<<.LabelMatchers>>} - node_memory_MemAvailable_bytes{job="node-exporter",<<.LabelMatchers>>}) by (<<.GroupBy>>)
+    containerQuery: |
+      sum by (<<.GroupBy>>) (
+        container_memory_usage_bytes{<<.LabelMatchers>>,container!=""}
+      )
+    nodeQuery: |
+      sum by (<<.GroupBy>>) (
+        label_join((kube_pod_info{pod=~"node-exporter-.*",<<.LabelMatchers>>}), "kubernetes_pod_name", "", "pod") * on(kubernetes_pod_name) group_right(node)
+        (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes)
+      )
     resources:
       overrides:
-        instance:
+        node:
           resource: node
         namespace:
           resource: namespace
