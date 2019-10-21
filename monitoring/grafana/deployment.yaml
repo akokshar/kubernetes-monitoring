@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {}
+  template:
+    spec:
+      serviceAccountName: grafana
+      containers:
+        - name: grafana
+          image: grafana/grafana
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: GF_PATHS_LOGS_NODE
+              value: console
+            - name: GF_PATHS_DATA
+              value: /grafana/data
+            - name: GF_PATHS_LOGS
+              value: /grafana/data/logs
+            - name: GF_PATHS_PLUGINS
+              value: /grafana/data/plugins
+            - name: GF_PATHS_PROVISIONING
+              value: /grafana/data/provisioning
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+              name: grafui
+          resources:
+            limits:
+              cpu: 250m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          volumeMounts:
+            - mountPath: /grafana/data
+              name: data
+            - mountPath: /grafana/dashboards
+              name: dashboards
+            - mountPath: /grafana/config
+              name: config
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: grafana-data
+        - name: config
+          configMap:
+            name: grafana-config
+        - name: dashboards
+          configMap:
+            name: grafana-dashboards

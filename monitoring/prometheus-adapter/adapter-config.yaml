@@ -2,12 +2,12 @@ resourceRules:
   cpu:
     containerQuery: |
       sum by (<<.GroupBy>>) (
-        rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>,container!=""}[5m])
+        rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>,container!=""}[1m])
       )
     nodeQuery: |
       sum by (<<.GroupBy>>) (
         label_join((kube_pod_info{pod=~"node-exporter-.*",<<.LabelMatchers>>}), "kubernetes_pod_name", "", "pod") * on(kubernetes_pod_name) group_right(node)
-        (sum by(kubernetes_pod_name) (1 - rate(node_cpu_seconds_total{mode="idle",kubernetes_pod_name=~"node-exporter-.*"}[5m])))
+        (sum by(kubernetes_pod_name) (1 - rate(node_cpu_seconds_total{mode="idle",kubernetes_pod_name=~"node-exporter-.*"}[1m])))
       )
     resources:
       overrides:

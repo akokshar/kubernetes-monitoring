@@ -4,5 +4,6 @@ bases:
   - node-exporter
   - kube-state-metrics
   - prometheus-adapter
+  - grafana
 resources:
   - namespace.yaml
